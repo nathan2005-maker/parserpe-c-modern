@@ -1,0 +1,78 @@
+
+ESTRUTURA: IMAGE_DOS_HEADER
+https://microsoft.github.io/windows-docs-rs/doc/windows/Win32/System/SystemServices/struct.IMAGE_DOS_HEADER.html
+
+Representação em C/C++ (equivalente no SDK do Windows em <winnt.h>):
+```c
+typedef struct _IMAGE_DOS_HEADER {      // Cabeçalho DOS .EXE
+    WORD   e_magic;                     // Número mágico ("MZ" -> 0x5A4D)
+    WORD   e_cblp;                      // Bytes na última página do arquivo
+    WORD   e_cp;                        // Páginas no arquivo
+    WORD   e_crlc;                      // Relocações
+    WORD   e_cparhdr;                   // Tamanho do cabeçalho em parágrafos
+    WORD   e_minalloc;                  // Mínimo de parágrafos adicionais necessários
+    WORD   e_maxalloc;                  // Máximo de parágrafos adicionais necessários
+    WORD   e_ss;                        // Valor SS inicial (relativo)
+    WORD   e_sp;                        // Valor SP inicial
+    WORD   e_csum;                      // Checksum
+    WORD   e_ip;                        // Valor IP inicial
+    WORD   e_cs;                        // Valor CS inicial (relativo)
+    WORD   e_lfarlc;                    // Endereço no arquivo da tabela de relocação
+    WORD   e_ovno;                      // Número do overlay
+    WORD   e_res[4];                    // Palavras reservadas (reservado)
+    WORD   e_oemid;                     // Identificador OEM (para e_oeminfo)
+    WORD   e_oeminfo;                   // Informação OEM; específico de e_oemid
+    WORD   e_res2[10];                  // Palavras reservadas (reservado)
+    LONG   e_lfanew;                    // Endereço no arquivo do cabeçalho PE principal
+  } IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;
+
+Abaixo está a tabela detalhada com os offsets em hexadecimal e decimal para lhe auxiliar
+no desenvolvimento do seu parser de PE em C11/C++:
+
+| Offset (Hex) | Offset (Dec) | Campo       | Tipo C  | Tamanho (Bytes) | Descrição / Função Principal                       |
+|--------------|--------------|-------------|---------|-----------------|----------------------------------------------------|
+| 0x00         | 0            | e_magic     | WORD    | 2               | Assinatura DOS. Deve ser 0x5A4D (caracteres "MZ")  |
+| 0x02         | 2            | e_cblp      | WORD    | 2               | Bytes na última página do arquivo                  |
+| 0x04         | 4            | e_cp        | WORD    | 2               | Páginas no arquivo                                 |
+| 0x06         | 6            | e_crlc      | WORD    | 2               | Relocações                                         |
+| 0x08         | 8            | e_cparhdr   | WORD    | 2               | Tamanho do cabeçalho em parágrafos                 |
+| 0x0A         | 10           | e_minalloc  | WORD    | 2               | Mínimo de parágrafos extras                       |
+| 0x0C         | 12           | e_maxalloc  | WORD    | 2               | Máximo de parágrafos extras                       |
+| 0x0E         | 14           | e_ss        | WORD    | 2               | Registrador SS inicial                             |
+| 0x10         | 16           | e_sp        | WORD    | 2               | Registrador SP inicial                             |
+| 0x12         | 18           | e_csum      | WORD    | 2               | Checksum do executável                             |
+| 0x14         | 20           | e_ip        | WORD    | 2               | Registrador IP inicial                             |
+| 0x16         | 22           | e_cs        | WORD    | 2               | Registrador CS inicial                             |
+| 0x18         | 24           | e_lfarlc    | WORD    | 2               | Endereço da tabela de relocações                   |
+| 0x1A         | 26           | e_ovno      | WORD    | 2               | Número do overlay                                  |
+| 0x1C         | 28           | e_res       | WORD[4] | 8               | Reservado                                          |
+| 0x24         | 36           | e_oemid     | WORD    | 2               | ID do OEM                                          |
+| 0x26         | 38           | e_oeminfo   | WORD    | 2               | Informações adicionais do OEM                      |
+| 0x28         | 40           | e_res2      | WORD[10]| 20              | Reservado                                          |
+| 0x3C         | 60           | e_lfanew    | LONG    | 4               | Offset do cabeçalho PE principal (IMAGE_NT_HEADERS)|
+
+Tamanho total da estrutura: 64 Bytes (0x40).
+
+--------------------------------------------------------------------------------
+3. NOTAS IMPORTANTES PARA IMPLEMENTAÇÃO DO PARSER
+--------------------------------------------------------------------------------
+
+Ao desenvolver o seu parser de PE, os dois campos mais cruciais nesta estrutura são:
+
+1. `e_magic`: 
+   - Você deve ler os primeiros 2 bytes do arquivo e verificar se o valor corresponde a 0x5A4D.
+   - Atenção à arquitetura Little-Endian (padrão em processadores x86/x64): No arquivo físico,
+     esses bytes aparecem na ordem 'M' (0x4D) e depois 'Z' (0x5A). Portanto, ao ler como um 
+     número de 16-bits (uint16_t / WORD), o valor lido será exatamente `0x5A4D` (IMAGE_DOS_SIGNATURE).
+
+2. `e_lfanew`:
+   - Indica onde o cabeçalho PE principal (IMAGE_NT_HEADERS) começa no arquivo.
+   - Você deve usar o valor de `e_lfanew` como offset para mover o ponteiro de leitura do arquivo
+     (usando fseek ou navegando através de um buffer mapeado em memória).
+   - Exemplo de validação de limite: Antes de pular para o offset `e_lfanew`, certifique-se de 
+     que ele é menor que o tamanho total do arquivo carregado (uma ótima aplicação prática para 
+     o seu sistema de tratamento de erros `TYPE_ERROR_LIMITE_BUFFER`).
+
+================================================================================
+FIM DO DOCUMENTO
+================================================================================

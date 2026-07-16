@@ -1,8 +1,5 @@
 #include "pch.h"
 
-bool ispe32(IMAGE_DOS_HEADER buffer, char* argv[]);
-
-
 int main(int argc, char* argv[]) {
 	FILE* fh = NULL;
 
@@ -23,26 +20,19 @@ int main(int argc, char* argv[]) {
 
 	IMAGE_DOS_HEADER buffer;
 
-	if(fread(&buffer, 32, sizeof(IMAGE_DOS_HEADER),1, fh)!= 1){
+	if (fread(&buffer, sizeof(IMAGE_DOS_HEADER), 1, fh) != 1) {
 		VTableError_File(TYPE_ERROR_FILE_INVALID,
 			"NOT POSSIBLE TO READ 32 BYTES FROM THE FILE",
 			argv[1]);
+		fclose(fh);
+		return EXIT_FAILURE;
+	}
+
+	if (!ispe32(buffer, argv)) {
+		fclose(fh);
 		return EXIT_FAILURE;
 	}
 
 	fclose(fh);
-	return EXIT_SUCCESS;
-}
-
-
-bool ispe32(IMAGE_DOS_HEADER buffer, char* argv[]) {
-	//"PE\0\0" é IMAGE_NT_SIGNATURE (0x00004550)
-	if (buffer.e_magic != IMAGE_DOS_SIGNATURE) {
-		VTableError_File(TYPE_ERROR_FILE_INVALID,
-			"FILE IS NOT A VALID DOS EXECUTABLE",
-			argv[1]);
-		return EXIT_FAILURE;
-	}
-	puts("FILE IS A VALID DOS EXECUTABLE");
 	return EXIT_SUCCESS;
 }
