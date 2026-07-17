@@ -3,15 +3,13 @@ project(readpe LANGUAGES C)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-include_directories(include)
 
 set(SOURCES
     cmd/main.c
     src/pch.c
     src/VTableError.c
+    src/pe_parser.c
+    src/io.c
 )
 
 add_executable(readpe ${SOURCES})

@@ -1,38 +1,33 @@
+
 #include "pch.h"
+#include "io.h"
+#include "pe_parser.h"
 
 int main(int argc, char* argv[]) {
-	FILE* fh = NULL;
+	(void)argc;
+    (void)argv;
 
-	if (argc != 2) {
-		VTableError_File(TYPE_ERROR_FILE_NOT_FOUND,
-			"INSUFFICENT ARGUMENTS",
-			"NOT FILE THE PAST AN ARGUMENT");
-		return EXIT_FAILURE;
-	}
+    if (argc != 2) {
+        VTableError_File(TYPE_ERROR_FILE_NOT_FOUND,
+            "INSUFFICENT ARGUMENTS",
+            "NOT FILE THE PAST AN ARGUMENT");
+        return EXIT_FAILURE;
+    }
 
-	fh = fopen(argv[1], "rb");
-	if (fh == NULL) {
-		VTableError_File(TYPE_ERROR_FILE_NOT_FOUND,
-			"NOT POSSIBLE TO OPEN THE FILE",
-			argv[1]);
-		return EXIT_FAILURE;
-	}
+    char* content = NULL;
+    size_t size = 0;
 
-	IMAGE_DOS_HEADER buffer;
+    Errno e = io_read_file(argv[1], &content, &size);
+    if (e != 0) {
+        fprintf(stderr, "could not read file: %s\n", strerror(e));
+        return EXIT_FAILURE;
+    }
 
-	if (fread(&buffer, sizeof(IMAGE_DOS_HEADER), 1, fh) != 1) {
-		VTableError_File(TYPE_ERROR_FILE_INVALID,
-			"NOT POSSIBLE TO READ 32 BYTES FROM THE FILE",
-			argv[1]);
-		fclose(fh);
-		return EXIT_FAILURE;
-	}
+    PE_FILE pe;
+    bool is_pe = pe_parser_from_buffer(content, size, &pe);
 
-	if (!ispe32(buffer, argv)) {
-		fclose(fh);
-		return EXIT_FAILURE;
-	}
+    
 
-	fclose(fh);
-	return EXIT_SUCCESS;
+    free(content);
+    return EXIT_SUCCESS;
 }
