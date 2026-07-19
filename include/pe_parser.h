@@ -1,3 +1,11 @@
+/*
+Analisador de arquivos PE (Portable Executable)
+
+Inspecionar o cabeçalho do arquivo PE pu DLLs do Windows.
+
+Validar o layout PE em disco ('M': 0x4A, 'Z': 0x5A).
+
+*/
 
 #ifndef PE_PARSER_H
 #define PE_PARSER_H

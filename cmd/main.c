@@ -1,10 +1,8 @@
+#include "sdk.h"
 
-#include "pch.h"
-#include "io.h"
-#include "pe_parser.h"
 
 int main(int argc, char* argv[]) {
-	(void)argc;
+    (void)argc;
     (void)argv;
 
     if (argc != 2) {
@@ -26,7 +24,10 @@ int main(int argc, char* argv[]) {
     PE_FILE pe;
     bool is_pe = pe_parser_from_buffer(content, size, &pe);
 
-    
+    if (!is_pe) {
+        free(content);
+        return EXIT_FAILURE;
+    }
 
     free(content);
     return EXIT_SUCCESS;

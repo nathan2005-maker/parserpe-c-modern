@@ -1,9 +1,20 @@
+/*
+	Relatório de erros.
+	Um tipo de erro compacto, baseado em *tagged-union*, utilizado em toda a ferramenta
+
+*/
+
 #ifndef VTABLE_ERROR_H
 #define VTABLE_ERROR_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+
+/* 
+	Categoria do erro sendo relatado. Determina qual membro da
+	união dentro de VTableError é válido para uma determinada instância. 
+*/
 
 typedef enum {
 	TYPE_ERROR_FILE_NOT_FOUND = 1, //Error related to file operations
@@ -30,8 +41,17 @@ typedef struct {
 
 }VTableError;
 
-
+/* 
+	Imprime uma mensagem de diagnóstico para "error" na stderr, formatada de acordo com
+	error->type. Encerra o processo se "error" for NULL. 
+*/
 void VTableError_Init(VTableError* error, typeError type, const char* message);
+
+/*
+	Wrapper de conveniência para erros relacionados a arquivos : constrói um VTableError
+	com o ramo "system_erro" preenchido a partir de "file_name" e
+	o reporta via VTableError_Init(). 
+*/
 
 void VTableError_File(typeError type, const char* message, const char* file_name);
 
