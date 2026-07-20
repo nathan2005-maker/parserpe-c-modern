@@ -12,23 +12,22 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    char* content = NULL;
-    size_t size = 0;
+    String_View content;
 
-    Errno e = io_read_file(argv[1], &content, &size);
+    Errno e = io_read_file(argv[1], &content);
     if (e != 0) {
         fprintf(stderr, "could not read file: %s\n", strerror(e));
         return EXIT_FAILURE;
     }
 
     PE_FILE pe;
-    bool is_pe = pe_parser_from_buffer(content, size, &pe);
+    bool is_pe = pe_parser_from_buffer(content, &pe);
 
     if (!is_pe) {
-        free(content);
+        free((void*)content.data);
         return EXIT_FAILURE;
     }
 
-    free(content);
+    free((void*)content.data);
     return EXIT_SUCCESS;
 }

@@ -1,34 +1,41 @@
-/*
-    Leitura de arquivo completo com buffer.
-    Pequena função auxiliar para ler um arquivo inteiro para um buffer
-    alocado no heap. Retornando um código de status errno.
+/* Leitura de arquivo completo com buffer.
+   Pequena função auxiliar para ler um arquivo inteiro para um buffer
+   alocado no heap. Retornando um código de status errno.
+
+   Devolve o resultado como um único String_View (ponteiro + tamanho
+   empacotados) em vez de dois parâmetros de saída separados -- assim
+   é impossível dessincronizar ponteiro e tamanho por engano.
 */
 
-#ifndef IO_H
-#define IO_H
+#ifndef _IO_H
+#define _IO_H
 
 #include "pch.h"
+#include "sv.h"
 #include <errno.h>
-#include <assert.h>
 
 typedef int Errno;
 
 /**
-     Lê todo o conteúdo do arquivo em "path" para um buffer recém - alocado
-     via malloc.
+     Lê todo o conteúdo do arquivo em "path" para um buffer recém-alocado
+     via malloc, e devolve uma view sobre ele em "*out".
 
-     Em caso de sucesso, "*content" aponta para o novo buffer (o chamador
-     é o proprietário e deve liberá-lo com free()) e "*size" contém seu
-     tamanho em bytes. Em caso de falha, "*content" e "*size" permanecem
-     inalterados e o valor de retorno é um código errno diferente de zero
-     que descreve o erro ocorrido.
-
+     Em caso de sucesso, "out->data" aponta para o novo buffer (o
+     chamador é o proprietário e deve liberá-lo com
+     free((void*)out->data)) e "out->count" contém seu tamanho em
+     bytes. Em caso de falha, "*out" fica zerado (data = NULL,
+     count = 0) e o valor de retorno é um código errno diferente de
+     zero que descreve o erro ocorrido.
  */
-Errno io_read_file(const char* path, char** content, size_t* size);
+Errno io_read_file(const char* path, String_View* out);
 
 #ifdef IO_IMPLEMENTATION
 
-Errno io_read_file(const char* path, char** content, size_t* size) {
+Errno
+io_read_file(const char* path, String_View* out)
+{
+    *out = sv_make(NULL, 0);
+
     FILE* file = fopen(path, "rb");
     if (!file) {
         return errno;
@@ -71,10 +78,9 @@ Errno io_read_file(const char* path, char** content, size_t* size) {
 
     fclose(file);
 
-    *content = data;
-    *size = (size_t)file_size;
+    *out = sv_make(data, (size_t)file_size);
     return 0;
 }
 
 #endif
-#endif
+#endif /* _IO_H */

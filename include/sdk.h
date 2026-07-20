@@ -6,6 +6,7 @@
 #define SDK_H
 
 #include "pch.h"
+#include "sv.h"
 #include "io.h"
 #include "pe_parser.h"
 
