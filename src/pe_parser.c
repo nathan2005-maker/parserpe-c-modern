@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "sdk.h"
 #include "pe_parser.h"
 #include <string.h>
 

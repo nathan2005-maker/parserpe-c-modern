@@ -9,6 +9,7 @@
 #include "sv.h"
 #include "io.h"
 #include "pe_parser.h"
-#include <VTableError.h>
+#include "VTableError.h"
+#include "sdk.h"
 
 #endif
