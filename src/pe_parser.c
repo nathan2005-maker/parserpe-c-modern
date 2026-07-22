@@ -1,10 +1,9 @@
-
 #include "pch.h"
 #include "pe_parser.h"
 #include <string.h>
 
-bool pe_parser_from_buffer(const char* buffer, size_t size, PE_FILE* out) {
-    if (size < sizeof(IMAGE_DOS_HEADER)) {
+bool pe_parser_from_buffer(const String_View buffer, PE_FILE* out) {
+    if (buffer.count < sizeof(IMAGE_DOS_HEADER)) {
         VTableError_File(TYPE_ERROR_FILE_INVALID,
             "FILE TOO SMALL TO CONTAIN A DOS HEADER",
             NULL);
@@ -12,7 +11,7 @@ bool pe_parser_from_buffer(const char* buffer, size_t size, PE_FILE* out) {
         return false;
     }
 
-    memcpy(&out->dos_header, buffer, sizeof(IMAGE_DOS_HEADER));
+    memcpy(&out->dos_header, buffer.data, sizeof(IMAGE_DOS_HEADER));
 
     if (out->dos_header.e_magic != IMAGE_DOS_SIGNATURE) {
         VTableError_File(TYPE_ERROR_FILE_INVALID,
