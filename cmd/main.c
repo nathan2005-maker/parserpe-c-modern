@@ -1,33 +1,31 @@
+#include "pch.h"
 #include "sdk.h"
 
-
-int main(int argc, char* argv[]) {
-    (void)argc;
-    (void)argv;
-
-    if (argc != 2) {
-        VTableError_File(TYPE_ERROR_FILE_NOT_FOUND,
-            "INSUFFICENT ARGUMENTS",
-            "NOT FILE THE PAST AN ARGUMENT");
-        return EXIT_FAILURE;
+int
+main(int argc, char** argv)
+{
+    if (argc < 2) {
+        fprintf(stderr, "usage: %s <file>\n", argv[0]);
+        return 1;
     }
 
-    String_View content;
+    const char* path = argv[1];
 
-    Errno e = io_read_file(argv[1], &content);
-    if (e != 0) {
-        fprintf(stderr, "could not read file: %s\n", strerror(e));
-        return EXIT_FAILURE;
+    String_View source;
+    Errno err = io_read_file(path, &source);
+    if (err != 0) {
+        VTableError_File(TYPE_ERROR_FILE_NOT_FOUND, "could not read source file", path);
+        return 1;
     }
 
-    PE_FILE pe;
-    bool is_pe = pe_parser_from_buffer(content, &pe);
+    Tokenizer tokenizer = tokenizer_make(path, source);
+    Tokens tokens = tokenizer_tokenize(&tokenizer);
 
-    if (!is_pe) {
-        free((void*)content.data);
-        return EXIT_FAILURE;
-    }
+    AST* program = parser_ast_from_tokens(tokens);
+    ast_dump(program, 0);
 
-    free((void*)content.data);
-    return EXIT_SUCCESS;
+    free(tokens.data);
+    free((void*)source.data);
+
+    return 0;
 }
