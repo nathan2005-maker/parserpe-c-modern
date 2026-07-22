@@ -69,7 +69,7 @@ io_read_file(const char* path, String_View* out)
         }
     }
 
-    if (fread(data, 1, (size_t)file_size, file) != (size_t)file_size) {
+    if (file_size > 0 && fread(data, 1, (size_t)file_size, file) != (size_t)file_size) {
         int err = ferror(file) ? EIO : 0;
         free(data);
         fclose(file);
