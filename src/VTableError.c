@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "VTableError.h" 
 
 void VTableError_Init(VTableError* error, typeError type, const char* message) {
 	if (error == NULL) { exit(EXIT_FAILURE); }

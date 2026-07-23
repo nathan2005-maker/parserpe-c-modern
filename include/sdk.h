@@ -1,4 +1,4 @@
-/* 
+/*
 	Cabeçalho unificador do SDK público.
 	Ponto único de inclusão para consumidores dos componentes internos da ferramenta
 */
@@ -10,6 +10,8 @@
 #include "io.h"
 #include "pe_parser.h"
 #include "VTableError.h"
-#include "sdk.h"
+#include "da.h"
+#include "token.h"
+#include "ast.h"
 
 #endif
