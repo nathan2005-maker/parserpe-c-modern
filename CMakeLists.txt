@@ -11,10 +11,12 @@ set(SOURCES
     src/pe_parser.c
     src/io.c
     src/sv.c
+    src/ast.c
+    src/token.c
 )
 
 add_executable(readpe ${SOURCES})
 
-target_include_directories(readpe PRIVATE include)
+target_include_directories(readpe PRIVATE include lexer)
 
 target_precompile_headers(readpe PRIVATE include/pch.h)
