@@ -24,7 +24,7 @@ extern "C" {
        Bytes que não formam uma instrução x86-64 válida são pulados um a
        um, imprimindo um marcador de erro nessa posição, pra não travar
        o disassembly inteiro por causa de dados/lixo no meio do código. */
-    void disasm_print_bytes(const uint8_t* code, size_t size, uint64_t runtime_address);
+    void disasm_print_bytes(FILE* fp, const uint8_t* code, size_t size, uint64_t runtime_address);
 
 #ifdef __cplusplus
 }

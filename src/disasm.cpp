@@ -1,10 +1,10 @@
 #include "disasm.h"
- 
+
 #include <Zydis/Zydis.h>
 #include <cstdio>
- 
+
 extern "C" void
-disasm_print_bytes(const uint8_t* code, size_t size, uint64_t runtime_address) {
+disasm_print_bytes(FILE* fp, const uint8_t* code, size_t size, uint64_t runtime_address) {
 
 
     ZydisDecoder decoder;
@@ -41,11 +41,11 @@ disasm_print_bytes(const uint8_t* code, size_t size, uint64_t runtime_address) {
                 ZYAN_NULL
             );
 
-            std::printf("%016llX  %s\n", (unsigned long long)address, text);
+            std::fprintf(fp, "%016llX  %s\n", (unsigned long long)address, text);
             offset += instruction.length;
         }
         else {
-            std::printf("%016llX  (byte invalido: 0x%02X)\n",
+            std::fprintf(fp, "%016llX  (byte invalido: 0x%02X)\n",
                 (unsigned long long)address, code[offset]);
             offset += 1;
         }
