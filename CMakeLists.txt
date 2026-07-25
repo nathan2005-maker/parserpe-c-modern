@@ -7,7 +7,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(Dependencies.cmake)
+include(imports/Dependencies.cmake)
 
 set(SOURCES
     cmd/main.c
@@ -24,7 +24,7 @@ set(SOURCES
 
 add_executable(readpe ${SOURCES})
 
-target_include_directories(readpe PRIVATE include lexer)
+target_include_directories(readpe PRIVATE include lexer imports)
 
 target_link_libraries(readpe PRIVATE Zydis)
 
