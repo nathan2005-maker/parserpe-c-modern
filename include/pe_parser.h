@@ -25,4 +25,12 @@ typedef struct {
    DOS válido. */
 bool pe_parser_from_buffer(const String_View buffer, PE_FILE* out);
 
+
+/* Devolve false se "out->is_valid_pe" for false, se os NT headers
+   não baterem com a assinatura PE, ou se nenhuma seção com esse
+   nome for encontrada.*/
+bool pe_parser_get_section(const String_View buffer, const PE_FILE* pe,
+    const char* section_name, const uint8_t** out_data, size_t* out_size,
+    uint64_t* out_virtual_address);
+
 #endif /* _PE_PARSER_H */
