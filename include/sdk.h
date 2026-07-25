@@ -14,5 +14,6 @@
 #include "token.h"
 #include "ast.h"
 #include "cg.h"
+#include "disasm.h"
 
 #endif
